@@ -42,8 +42,37 @@ int main(int argc, char **argv) {
     Editor editor = editor_new(argv[1]);
 
 
+    WINDOW *window = initscr();
+
+    bool quit = false;
+    while (!quit) {
+
+        // Draw Text
+        for (size_t i = 0; i < editor.text.size; ++i)
+            printw("%s", editor.text.lines[i].str);
+
+        // Move Cursor
+        move(editor.cursor_line, editor.cursor_column);
 
 
+        // refresh();
 
+        char c = getch();
+        switch (editor.mode) {
+            case MODE_NORMAL: {
+            } break;
+            case MODE_INSERT: {
+            } break;
+            case MODE_COMMAND: {
+            } break;
+        }
+
+        clear();
+
+    }
+
+    endwin();
+    editor_destroy(&editor);
+    return EXIT_SUCCESS;
 
 }

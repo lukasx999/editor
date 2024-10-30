@@ -23,7 +23,7 @@ typedef struct {
 typedef enum {
     MODE_NORMAL,
     MODE_INSERT,
-    MDOE_COMMAND,
+    MODE_COMMAND,
 } Modes;
 
 static const char *modes_repr[] = { "normal", "insert", "command" };
