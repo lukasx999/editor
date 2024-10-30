@@ -26,6 +26,7 @@ typedef enum {
     MODE_COMMAND,
 } Modes;
 
+#pragma GCC diagnostic ignored "-Wunused-variable"
 static const char *modes_repr[] = { "normal", "insert", "command" };
 
 typedef struct {
@@ -35,8 +36,8 @@ typedef struct {
     Lines text;
 } Editor;
 
-extern Editor editor_new(const char *filename);
-extern void editor_destroy(Editor *ed);
+extern Editor editor_new    (const char *filename);
+extern void   editor_destroy(Editor *ed);
 extern String* editor_get_current_string(Editor *ed);
 extern void editor_insert    (Editor *ed, char c);
 extern void editor_move_right(Editor *ed);
