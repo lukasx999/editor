@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
         // Draw Statusline
         char fmt[10] = { 0 };
         snprintf(fmt, 10, "[%s]", modes_repr[editor.mode]);
-        mvprintw(getmaxy(window), 0, "%s", fmt);
+        mvprintw(getmaxy(window)-1, 0, "%s", fmt);
 
 
         // Move Cursor
@@ -67,6 +67,10 @@ int main(int argc, char **argv) {
             case MODE_NORMAL: {
 
                 switch (c) {
+
+                    case 'q':
+                        quit = true;
+                        break;
 
                     case 'i':
                         editor.mode = MODE_INSERT;
@@ -92,8 +96,20 @@ int main(int argc, char **argv) {
 
             } break;
             case MODE_INSERT: {
+
+                if (c == 27) { // ESCAPE
+                    editor.mode = MODE_NORMAL;
+                    break;
+                }
+
+                editor_insert(&editor, c);
+
             } break;
             case MODE_COMMAND: {
+                if (c == 27) { // ESCAPE
+                    editor.mode = MODE_NORMAL;
+                    break;
+                }
             } break;
         }
 
