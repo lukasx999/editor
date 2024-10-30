@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +5,6 @@
 #include <sys/stat.h>
 
 #include "./edit.h"
-
 
 String string_new(void) {
     String new = {
