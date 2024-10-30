@@ -51,15 +51,45 @@ int main(int argc, char **argv) {
         for (size_t i = 0; i < editor.text.size; ++i)
             printw("%s", editor.text.lines[i].str);
 
+        // Draw Statusline
+        char fmt[10] = { 0 };
+        snprintf(fmt, 10, "[%s]", modes_repr[editor.mode]);
+        mvprintw(getmaxy(window), 0, "%s", fmt);
+
+
         // Move Cursor
         move(editor.cursor_line, editor.cursor_column);
 
 
-        // refresh();
 
         char c = getch();
         switch (editor.mode) {
             case MODE_NORMAL: {
+
+                switch (c) {
+
+                    case 'i':
+                        editor.mode = MODE_INSERT;
+                        break;
+
+                    case 'h':
+                        editor_move_left(&editor);
+                        break;
+
+                    case 'l':
+                        editor_move_right(&editor);
+                        break;
+
+                    case 'j':
+                        editor_move_down(&editor);
+                        break;
+
+                    case 'k':
+                        editor_move_up(&editor);
+                        break;
+                }
+
+
             } break;
             case MODE_INSERT: {
             } break;
