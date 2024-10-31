@@ -7,28 +7,14 @@
 
 #include "./edit.h"
 
+#define LOGFILE "log.txt"
+#define LOG_IMPL
+#include "./log.h"
 
 #define KEY_ESCAPE 27
 
 
 
-#define LOGFILE "log.txt"
-
-void log_init(void) {
-    FILE *f = fopen(LOGFILE, "w");
-    fclose(f);
-}
-
-void log_write(const char *fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-
-    FILE *f = fopen(LOGFILE, "a");
-    vfprintf(f, fmt, va);
-
-    va_end(va);
-    fclose(f);
-}
 
 
 int main(int argc, char **argv) {
@@ -60,8 +46,6 @@ int main(int argc, char **argv) {
         // Move Cursor
         move(editor.cursor_line, editor.cursor_column);
 
-        log_write("cursor_line: %d\n", editor.cursor_line);
-
         char c = getch();
         switch (editor.mode) {
             case MODE_NORMAL: {
@@ -73,26 +57,31 @@ int main(int argc, char **argv) {
                     case 'q':
                         quit = true;
                         break;
+                    case 'x':
+                        editor_delete(&editor);
+                        break;
                     case 'i':
                         editor.mode = MODE_INSERT;
                         break;
                     case 'I':
-                        editor.cursor_column = 0;
+                        editor_move_start_line(&editor);
                         editor.mode = MODE_INSERT;
                         break;
                     case 'A': {
-                        String *current = editor_get_current_string(&editor);
-                        editor.cursor_column = current->size;
+                        // TODO: this!
+                        editor_move_end_line(&editor);
+                        editor.cursor_column++;
                         editor.mode = MODE_INSERT;
                     } break;
                     case '$': {
-                        String *current = editor_get_current_string(&editor);
-                        editor.cursor_column = current->size-1;
+                        editor_move_end_line(&editor);
                     } break;
                     case '_':
-                    case '0': {
-                        editor.cursor_column = 0;
-                    } break;
+                        editor_move_start_line_skip_whitespace(&editor);
+                        break;
+                    case '0':
+                        editor_move_start_line(&editor);
+                        break;
                     case 'a':
                         editor.mode = MODE_INSERT;
                         editor.cursor_column++;

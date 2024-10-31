@@ -6,115 +6,45 @@
 
 #include "./edit.h"
 
-String string_new(void) {
-    String new = {
-        .size     = 0,
-        .capacity = 5,
-    };
-    new.str = calloc(new.capacity, sizeof(char));
-    return new;
+#include "./log.h"
+
+
+/* ---------------- */
+/* Helper Functions */
+/* ---------------- */
+
+static String* _editor_get_current_string(Editor *ed) {
+    return &ed->text.lines[ed->cursor_line];
 }
 
-String string_from(const char *str) {
-    String new = {
-        .size     = strlen(str),
-        .capacity = strlen(str) + 1, // +1 for terminating nullbyte
-    };
-    new.str = calloc(new.capacity, sizeof(char));
-    strncpy(new.str, str, new.size);
-    return new;
+// TODO: maybe check ahead
+// _editor_is_last_char_right()
+static bool _editor_is_outofbounds_right(Editor *ed) {
+    // checks if the cursor has overstepped the string to the right
+    // it only checks if the cursor is CURRENTLY out of bounds, not if its about to be
+    String *s = _editor_get_current_string(ed);
+    return ed->cursor_column + 1 > (int) s->size;
 }
 
-void string_append_char(String *s, char c) {
-    if (s->size + 2 > s->capacity) { // +1 for keeping nullbyte at the end
-        s->capacity *= 2;
-        s->str = realloc(s->str, s->capacity * sizeof(char));
-    }
-    s->str[s->size++] = c;
-}
+static bool _editor_is_last_line(Editor *ed) {
+    // checks if the current line (indicated by `cursor_line`) is the last line in the editor
 
-void string_append_string(String *s, const String *other) {
-    for (size_t i = 0; i < strlen(other->str); ++i)
-        string_append_char(s, other->str[i]);
-}
-
-
-void string_insert_char_before(String *s, size_t index, char c) {
-
-    assert(index < s->size);
-
-    ++s->capacity;
-    ++s->size;
-    s->str = realloc(s->str, s->capacity * sizeof(char));
-
-    const void *src = s->str + index;
-    void *dest = s->str + index + 1;
-    size_t n = (s->size - index - 1) * sizeof(char);
-
-    memmove(dest, src, n);
-
-    s->str[index] = c;
+    bool a = &ed->text.lines[ed->cursor_line] == &ed->text.lines[ed->text.size-1];
+    bool b = ed->cursor_line + 1 == (int) ed->text.size;
+    assert(a == b); // sanity check
+    return a;
 
 }
 
-void string_insert_char_after(String *s, size_t index, char c) {
-
-    assert(index < s->size);
-
-    ++s->capacity;
-    ++s->size;
-    s->str = realloc(s->str, s->capacity * sizeof(char));
-
-    const void *src = s->str + index + 1;
-    void *dest = s->str + index + 2;
-    size_t n = (s->size - index - 1) * sizeof(char);
-
-    memmove(dest, src, n);
-
-    s->str[index+1] = c;
-
-}
+/* ---------------- */
+/* ---------------- */
+/* ---------------- */
 
 
 
-
-
-Lines lines_new(void) {
-    Lines new = {
-        .capacity = 5,
-        .size     = 0,
-    };
-
-    new.lines = malloc(new.capacity * sizeof(String));
-
-    return new;
-}
-
-void lines_append(Lines *l, const String *s) {
-
-    if (l->size + 1 > l->capacity) {
-        l->capacity *= 2;
-        l->lines = realloc(l->lines, l->capacity * sizeof(String));
-    }
-
-    l->lines[l->size++] = *s;
-}
-
-// TODO: this
-void lines_remove(Lines *l, size_t index) {
-    assert(index < l->size);
-
-    // void *dest;
-    // const void *src;
-    // size_t n;
-    // memmove(dest, src, n);
-
-    --l->size;
-}
-
-
-
-
+/* ------------------- */
+/* Instance Management */
+/* ------------------- */
 
 Editor editor_new(const char *filename) {
 
@@ -150,7 +80,6 @@ Editor editor_new(const char *filename) {
         memset(buf, 0, BUFSIZ);
     }
 
-
     fclose(f);
     return ed;
 
@@ -161,8 +90,6 @@ void editor_destroy(Editor *ed) {
         free(ed->text.lines[i].str);
     free(ed->text.lines);
 }
-
-
 
 void editor_write(Editor *ed, const char *filename) {
 
@@ -178,26 +105,32 @@ void editor_write(Editor *ed, const char *filename) {
 
 }
 
+/* ------------------- */
+/* ------------------- */
+/* ------------------- */
 
 
 
-String* editor_get_current_string(Editor *ed) {
-    return &ed->text.lines[ed->cursor_line];
+/* --------------- */
+/* Char Operations */
+/* --------------- */
+
+void editor_delete(Editor *ed) {
+    string_delete(_editor_get_current_string(ed), ed->cursor_column);
 }
-
 
 void editor_insert(Editor *ed, char c) {
 
     // foo| <-- appending here
-    if ((size_t) ed->cursor_column == editor_get_current_string(ed)->size) {
+    if ((size_t) ed->cursor_column == _editor_get_current_string(ed)->size) {
         string_insert_char_after(
-            editor_get_current_string(ed),
+            _editor_get_current_string(ed),
             ed->cursor_column - 1, c
         );
     }
     else {
         string_insert_char_before(
-            editor_get_current_string(ed),
+            _editor_get_current_string(ed),
             ed->cursor_column, c
         );
     }
@@ -205,29 +138,15 @@ void editor_insert(Editor *ed, char c) {
     ed->cursor_column++;
 }
 
+/* --------------- */
+/* --------------- */
+/* --------------- */
 
 
-// Helper functions
 
-// TODO: maybe check ahead
-// _editor_is_last_char_right()
-static bool _editor_is_outofbounds_right(Editor *ed) {
-    // checks if the cursor has overstepped the string to the right
-    // it only checks if the cursor is CURRENTLY out of bounds, not if its about to be
-    String *s = editor_get_current_string(ed);
-    return ed->cursor_column + 1 > (int) s->size;
-}
-
-static bool _editor_is_last_line(Editor *ed) {
-    // checks if the current line (indicated by `cursor_line`) is the last line in the editor
-
-    bool a = &ed->text.lines[ed->cursor_line] == &ed->text.lines[ed->text.size-1];
-    bool b = ed->cursor_line + 1 == (int) ed->text.size;
-    assert(a == b); // sanity check
-    return a;
-
-}
-
+/* --------------- */
+/* Move Operations */
+/* --------------- */
 
 void editor_move_right(Editor *ed) {
     ed->cursor_column++;
@@ -257,11 +176,11 @@ void editor_move_right(Editor *ed) {
 void editor_move_left(Editor *ed) {
     ed->cursor_column--;
 
-    String *s = editor_get_current_string(ed);
+    String *s = _editor_get_current_string(ed);
 
     if (ed->cursor_column < 0) {
         ed->cursor_line--;
-        s = editor_get_current_string(ed);
+        s = _editor_get_current_string(ed);
         ed->cursor_column = s->size - 1;
     }
 }
@@ -308,3 +227,26 @@ void editor_move_down(Editor *ed) {
 
 
 }
+
+void editor_move_end_line(Editor *ed) {
+    ed->cursor_column = _editor_get_current_string(ed)->size - 1;
+}
+
+void editor_move_start_line(Editor *ed) {
+    ed->cursor_column = 0;
+}
+
+void editor_move_start_line_skip_whitespace(Editor *ed) {
+
+    char *current;
+    char *start = current = _editor_get_current_string(ed)->str;
+
+    while (*current == ' ')
+        current++;
+
+    ed->cursor_column = current - start;
+}
+
+/* --------------- */
+/* --------------- */
+/* --------------- */
