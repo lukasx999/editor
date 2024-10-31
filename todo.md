@@ -8,3 +8,5 @@
 - empty buffers
 - command mode cmds
 - visual mode
+- option selector for editor options (eg: config file)
+- find a name (ced?)
