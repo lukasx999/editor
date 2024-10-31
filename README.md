@@ -3,6 +3,6 @@
 ### Build instructions
 
 ```
-cd src/
+$ cd src/
 $ make
 ```
