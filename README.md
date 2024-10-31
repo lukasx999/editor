@@ -1,6 +1,6 @@
 ## ~~Vim~~ **based** Text Editor in C
 
-### Build instructions
+### Build Instructions
 
 ```
 $ cd src/
