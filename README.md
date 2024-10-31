@@ -2,5 +2,7 @@
 
 ### Build instructions
 
-`cd src/`
-`$ make`
+```
+cd src/
+$ make
+```
