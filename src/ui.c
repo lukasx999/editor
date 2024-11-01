@@ -78,7 +78,6 @@ void ui_destroy(Ui *ui) {
 }
 
 
-// TODO: fix flickering
 // TODO: scrollable text + wrapping
 
 void ui_loop(Ui *ui) {
@@ -114,8 +113,12 @@ void ui_loop(Ui *ui) {
         assert(ui->editor->cursor_column >= 0);
 
 
+
         curs_set(1);
         char c = getch();
+
+        werase(ui->window);
+        werase(ui->window_text_area);
 
         switch (ui->editor->mode) {
             case MODE_NORMAL: {
@@ -128,8 +131,7 @@ void ui_loop(Ui *ui) {
                         quit = true;
                         break;
                     case 'x':
-                        // BUG: doesnt work with empty line
-                        editor_delete(ui->editor);
+                        editor_delete_char(ui->editor);
                         break;
                     case 'i':
                         ui->editor->mode = MODE_INSERT;
@@ -145,11 +147,8 @@ void ui_loop(Ui *ui) {
                         editor_move_start_document(ui->editor);
                         break;
                     case 'A': {
-                        // TODO: this!
-                        // BUG: dont move cursor if line size is 0 => empty line
-                        editor_move_end_line(ui->editor);
-                        ui->editor->cursor_column++;
-                        ui->editor->mode = MODE_INSERT;
+                        editor_move_end_line_append_mode(ui->editor);
+                        ui->editor->mode = MODE_APPEND;
                     } break;
                     case '$': {
                         editor_move_end_line(ui->editor);
@@ -183,6 +182,8 @@ void ui_loop(Ui *ui) {
 
 
             } break;
+
+            case MODE_APPEND:
             case MODE_INSERT: {
 
                 if (c == KEY_ESCAPE) {
@@ -205,8 +206,8 @@ void ui_loop(Ui *ui) {
 
         // wclear(ui->window);
         // wclear(ui->window_text_area);
-        werase(ui->window);
-        werase(ui->window_text_area);
+        // werase(ui->window);
+        // werase(ui->window_text_area);
 
     }
 

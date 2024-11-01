@@ -126,9 +126,17 @@ void editor_write(Editor *ed, const char *filename) {
 /* Char Operations */
 /* --------------- */
 
-// TODO: this isnt working properly
-void editor_delete(Editor *ed) {
+void editor_delete_char(Editor *ed) {
+
+    if (_editor_is_empty_line(ed)) // cannot delete empty line
+        return;
+
     string_delete(_editor_get_current_string(ed), ed->cursor_column);
+
+    // out of bounds check after deleting
+    if (_editor_is_over_end_of_line(ed))
+        editor_move_end_line(ed);
+
 }
 
 void editor_insert(Editor *ed, char c) {
@@ -138,15 +146,8 @@ void editor_insert(Editor *ed, char c) {
     // corner case: appending to the end of a line
     // foo| <-- appending here
     // TODO: this:
-    if ((size_t) ed->cursor_column == current->size) {
-
-        if (_editor_is_empty_line(ed)) { // empty line
-            string_append_char(current, c);
-        }
-        else {
-            string_insert_char_after(current, ed->cursor_column - 1, c);
-        }
-
+    if ((size_t) ed->cursor_column == current->size) { // append mode
+        string_append_char(current, c);
     }
     else {
         string_insert_char_before(current, ed->cursor_column, c);
@@ -167,10 +168,9 @@ void editor_insert(Editor *ed, char c) {
 
 
 
-// BUG: not working correctly on empty line
 void editor_move_right(Editor *ed) {
 
-    if (!_editor_is_at_end_of_line(ed)) {
+    if (!_editor_is_at_end_of_line(ed) && !_editor_is_empty_line(ed)) {
         ed->cursor_column++;
         return;
     }
@@ -184,7 +184,7 @@ void editor_move_right(Editor *ed) {
         editor_move_start_line(ed);
     }
     else { // go to the beginning of the next line
-        ed->cursor_line++;
+        ed->cursor_line++; // TODO: use editor move
         editor_move_start_line(ed);
     }
 
@@ -254,8 +254,9 @@ void editor_move_down(Editor *ed) {
 }
 
 void editor_move_end_line(Editor *ed) {
+    bool  empty = _editor_is_empty_line(ed);
     size_t size = _editor_get_current_string(ed)->size;
-    ed->cursor_column = size == 0 ? 0 : size - 1; // check for empty line (size == 0)
+    ed->cursor_column = empty ? 0 : size - 1; // check for empty line (size == 0)
 }
 
 void editor_move_start_line(Editor *ed) {
@@ -263,8 +264,7 @@ void editor_move_start_line(Editor *ed) {
 }
 
 void editor_move_start_line_skip_whitespace(Editor *ed) {
-
-    char *current;
+    char *current = NULL;
     char *start = current = _editor_get_current_string(ed)->str;
 
     while (*current == ' ')
@@ -279,6 +279,14 @@ void editor_move_end_document(Editor *ed) {
 
 void editor_move_start_document(Editor *ed) {
     ed->cursor_line = 0;
+}
+
+void editor_move_end_line_append_mode(Editor *ed) {
+    if (_editor_is_empty_line(ed))
+        return;
+
+    editor_move_end_line(ed);
+    ed->cursor_column++;
 }
 
 /* --------------- */
