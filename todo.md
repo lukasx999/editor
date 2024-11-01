@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] remove border around text area
 - [ ] truncating lines
 - [ ] scrolling text
   - [ ] statusbar

@@ -17,16 +17,26 @@ static void _ui_draw_statusline(Ui *ui) {
     // Draw Statusline
     color_set(PAIR_STATUSLINE, NULL);
     char fmt[10] = { 0 };
-    snprintf(fmt, 10, "<%s>", modes_repr[ui->editor->mode]);
+    snprintf(fmt, 10, "|%s|", modes_repr[ui->editor->mode]);
     mvwprintw(ui->window, getmaxy(ui->window)-1, 0, "%s", fmt);
     color_set(PAIR_DEFAULT, NULL);
+    // mvwprintw(ui->window, 0, 0, "[%s]", ui->editor->filename);
 }
 
 static void _ui_draw_text(Ui *ui) {
     for (size_t i = 0; i < ui->editor->text.size; ++i) {
-        mvwprintw(ui->window, i, 0, "%s", ui->editor->text.lines[i].str);
+        mvwprintw(ui->window_text_area,
+                  i + ui->text_border,
+                  ui->text_border,
+                  "%s", ui->editor->text.lines[i].str);
     }
 }
+
+
+static void _ui_draw_border(WINDOW *w) {
+    wborder(w, '|', '|', '-', '-', '+', '+', '+', '+');
+}
+
 
 
 Ui ui_init(Editor *ed) {
@@ -34,7 +44,7 @@ Ui ui_init(Editor *ed) {
     start_color();
     atexit(_quit);
     init_pair(PAIR_STATUSLINE, COLOR_RED, COLOR_BLACK);
-    init_pair(PAIR_TEXT, COLOR_BLUE, COLOR_BLACK);
+    init_pair(PAIR_TEXT, COLOR_WHITE, COLOR_BLACK);
     // init_color(COLOR_RED, 0, 0, 0); // change existing base colors
     curs_set(1);
     noecho();
@@ -54,9 +64,10 @@ Ui ui_init(Editor *ed) {
 
 
     Ui ui = {
-        .window = window,
-        .editor = ed,
+        .window           = window,
+        .editor           = ed,
         .window_text_area = text_area,
+        .text_border      = false,
     };
 
     return ui;
@@ -73,25 +84,33 @@ void ui_loop(Ui *ui) {
     bool quit = false;
     while (!quit) {
 
+        /* Root Window */
+        _ui_draw_statusline(ui);
         wrefresh(ui->window);
-        box(ui->window_text_area, 0, '-');
+        /* ----------- */
+
+
+        /* Text area */
+        _ui_draw_text(ui);
+        if (ui->text_border) {
+            _ui_draw_border(ui->window_text_area);
+        }
+
+        wmove(ui->window_text_area,
+              ui->editor->cursor_line   + ui->text_border,
+              ui->editor->cursor_column + ui->text_border);
+
         wrefresh(ui->window_text_area);
+        /* --------- */
 
 
 
-        // _ui_draw_text(ui);
-        // _ui_draw_statusline(ui);
-
-        // Move Cursor
-        move(ui->editor->cursor_line, ui->editor->cursor_column);
 
         // sanity check
         assert(ui->editor->cursor_line   >= 0);
         assert(ui->editor->cursor_column >= 0);
 
-
         char c = getch();
-
         switch (ui->editor->mode) {
             case MODE_NORMAL: {
                 switch (c) {

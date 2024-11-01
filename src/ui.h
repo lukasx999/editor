@@ -20,8 +20,10 @@ typedef enum {
 
 typedef struct {
     WINDOW *window; // root window (entire screen)
-    WINDOW *window_text_area; // bounds of actual text
     Editor *editor;
+
+    WINDOW *window_text_area; // bounds of actual text
+    bool text_border;
 } Ui;
 
 extern Ui   ui_init   (Editor *ed);
