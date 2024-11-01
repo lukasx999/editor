@@ -9,6 +9,7 @@
 #include "./ui.h"
 
 
+
 static void _quit(void) {
     endwin();
 }
@@ -23,6 +24,10 @@ static void _ui_draw_statusline(Ui *ui) {
     // mvwprintw(ui->window, 0, 0, "[%s]", ui->editor->filename);
 }
 
+static void _ui_draw_border(WINDOW *w) {
+    wborder(w, '|', '|', '-', '-', '+', '+', '+', '+');
+}
+
 static void _ui_draw_text(Ui *ui) {
     for (size_t i = 0; i < ui->editor->text.size; ++i) {
         mvwprintw(ui->window_text_area,
@@ -31,12 +36,6 @@ static void _ui_draw_text(Ui *ui) {
                   "%s", ui->editor->text.lines[i].str);
     }
 }
-
-
-static void _ui_draw_border(WINDOW *w) {
-    wborder(w, '|', '|', '-', '-', '+', '+', '+', '+');
-}
-
 
 
 Ui ui_init(Editor *ed) {
@@ -96,6 +95,8 @@ void ui_loop(Ui *ui) {
             _ui_draw_border(ui->window_text_area);
         }
 
+        // TODO: fix flickering
+        // TODO: scrollable text + wrapping
         wmove(ui->window_text_area,
               ui->editor->cursor_line   + ui->text_border,
               ui->editor->cursor_column + ui->text_border);
