@@ -25,6 +25,7 @@ void lines_append(Lines *l, const String *s) {
 }
 
 // TODO: this
+// TODO: insert line when pressing ENTER in insert mode
 void lines_remove(Lines *l, size_t index) {
     assert(index < l->size);
 

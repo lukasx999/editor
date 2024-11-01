@@ -46,13 +46,15 @@ typedef struct {
     Modes mode;
     Lines text;
 
+    // bool last_char; // TODO: this
+
     const char *filename;
 
     // Options:
     bool wrap_vertical,
          wrap_horizontal;
-    // TODO: bool last_char;
 } Editor;
+// TODO: allocate editor on heap and return ptr to user
 
 // Instance Mangagement
 extern Editor editor_new(const char *filename); // filename == NULL will create an empty buffer
@@ -71,3 +73,5 @@ extern void editor_move_down      (Editor *ed);
 extern void editor_move_end_line  (Editor *ed);
 extern void editor_move_start_line(Editor *ed);
 extern void editor_move_start_line_skip_whitespace(Editor *ed);
+extern void editor_move_end_document  (Editor *ed);
+extern void editor_move_start_document(Editor *ed);

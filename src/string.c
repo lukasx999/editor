@@ -29,11 +29,12 @@ String string_from(const char *str) {
 void string_delete(String *s, size_t index) {
 
     const void *src = s->str + index + 1;
-    void *dest = s->str + index;
-    size_t n = (s->size - index - 1) * sizeof(char);
+    void *dest      = s->str + index;
+    size_t n        = (s->size - index - 1) * sizeof(char);
 
     memmove(dest, src, n);
     --s->size;
+    s->str[s->size] = '\0';
 
 }
 
@@ -60,8 +61,8 @@ void string_insert_char_before(String *s, size_t index, char c) {
     s->str = realloc(s->str, s->capacity * sizeof(char));
 
     const void *src = s->str + index;
-    void *dest = s->str + index + 1;
-    size_t n = (s->size - index - 1) * sizeof(char);
+    void *dest      = s->str + index + 1;
+    size_t n        = (s->size - index - 1) * sizeof(char);
 
     memmove(dest, src, n);
 
@@ -78,8 +79,8 @@ void string_insert_char_after(String *s, size_t index, char c) {
     s->str = realloc(s->str, s->capacity * sizeof(char));
 
     const void *src = s->str + index + 1;
-    void *dest = s->str + index + 2;
-    size_t n = (s->size - index - 1) * sizeof(char);
+    void *dest      = s->str + index + 2;
+    size_t n        = (s->size - index - 1) * sizeof(char);
 
     memmove(dest, src, n);
 
