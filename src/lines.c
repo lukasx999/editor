@@ -27,13 +27,14 @@ void lines_append(Lines *l, const String *s) {
 
 // TODO: this
 // TODO: insert line when pressing ENTER in insert mode
-void lines_remove(Lines *l, size_t index) {
+void lines_delete(Lines *l, size_t index) {
     assert(index < l->size);
 
-    // void *dest;
-    // const void *src;
-    // size_t n;
-    // memmove(dest, src, n);
+    void *dest      = l->lines + index;
+    const void *src = l->lines + index + 1;
+    size_t n        = l->size  - index + 1;
+
+    memmove(dest, src, n * sizeof(String));
 
     --l->size;
 }
@@ -48,9 +49,9 @@ void lines_insert_after(Lines *l, size_t index, String *s) {
 
     const void *src = l->lines + index + 1;
     void *dest      = l->lines + index + 2;
-    size_t n        = (l->size - index - 1) * sizeof(String);
+    size_t n        = l->size  - index - 1;
 
-    memmove(dest, src, n);
+    memmove(dest, src, n * sizeof(String));
 
     l->lines[index+1] = *s; // TODO: +1 is ok, but ++ causes double free???
 }

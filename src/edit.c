@@ -19,13 +19,19 @@ _editor_get_current_string(Editor *ed) {
 }
 
 static inline bool
-_editor_is_last_line_document(Editor *ed) {
+_editor_is_at_last_line_document(Editor *ed) {
     // checks if the current line (indicated by `cursor_line`) is the last line in the document
     return (size_t) ed->cursor_line + 1 == editor_get_document_size(ed);
 }
 
 static inline bool
-_editor_is_first_line_document(Editor *ed) {
+_editor_is_over_last_line_document(Editor *ed) {
+    // checks if the current line (indicated by `cursor_line`) is over the last line in the document
+    return (size_t) ed->cursor_line + 1 > editor_get_document_size(ed);
+}
+
+static inline bool
+_editor_is_at_first_line_document(Editor *ed) {
     // checks if the current line (indicated by `cursor_line`) is the first line in the document
     return ed->cursor_line == 0;
 }
@@ -49,7 +55,7 @@ _editor_is_at_start_of_line(Editor *ed) {
 }
 
 static inline bool
-_editor_is_empty_line(Editor *ed) {
+_editor_is_at_empty_line(Editor *ed) {
     // returns true if the cursor is hovering over an empty line
     return _editor_get_current_string(ed)->size == 0;
 }
@@ -142,7 +148,7 @@ void editor_write(Editor *ed, const char *filename) {
 
 void editor_delete_char(Editor *ed) {
 
-    if (_editor_is_empty_line(ed)) // cannot delete empty line
+    if (_editor_is_at_empty_line(ed)) // cannot delete empty line
         return;
 
     string_delete(_editor_get_current_string(ed), ed->cursor_column);
@@ -150,6 +156,23 @@ void editor_delete_char(Editor *ed) {
     // out of bounds check after deleting
     if (_editor_is_over_end_of_line(ed))
         editor_move_end_line(ed);
+
+}
+
+void editor_delete_line(Editor *ed) {
+
+    if (editor_get_document_size(ed) == 1) {
+        lines_delete(&ed->text, ed->cursor_line);
+        String s = string_from("");
+        lines_append(&ed->text, &s);
+        editor_move_start_line(ed);
+        return;
+    }
+
+    lines_delete(&ed->text, ed->cursor_line);
+
+    if (_editor_is_over_last_line_document(ed))
+        editor_move_up(ed);
 
 }
 
@@ -175,6 +198,11 @@ void editor_insert_line_after(Editor *ed) {
     lines_insert_after(&ed->text, ed->cursor_line, &s);
 }
 
+void editor_set_mode(Editor *ed, Mode mode) {
+    ed->mode = mode;
+}
+
+
 
 /* --------------- */
 /* --------------- */
@@ -197,7 +225,7 @@ size_t editor_get_document_size(Editor *ed) {
     return ed->text.size;
 }
 
-Modes editor_get_current_mode(Editor *ed) {
+Mode editor_get_current_mode(Editor *ed) {
     return ed->mode;
 }
 
@@ -217,7 +245,7 @@ Modes editor_get_current_mode(Editor *ed) {
 
 void editor_move_right(Editor *ed) {
 
-    if (!_editor_is_at_end_of_line(ed) && !_editor_is_empty_line(ed)) {
+    if (!_editor_is_at_end_of_line(ed) && !_editor_is_at_empty_line(ed)) {
         ed->cursor_column++;
         return;
     }
@@ -226,7 +254,7 @@ void editor_move_right(Editor *ed) {
         return;
     }
 
-    if (_editor_is_last_line_document(ed)) { // go to the beginning of the document
+    if (_editor_is_at_last_line_document(ed)) { // go to the beginning of the document
         editor_move_start_document(ed);
         editor_move_start_line(ed);
     }
@@ -248,7 +276,7 @@ void editor_move_left(Editor *ed) {
         return;
     }
 
-    if (_editor_is_first_line_document(ed)) { // go to the end of the document
+    if (_editor_is_at_first_line_document(ed)) { // go to the end of the document
         editor_move_end_document(ed);
         editor_move_end_line(ed);
     }
@@ -261,7 +289,7 @@ void editor_move_left(Editor *ed) {
 
 void editor_move_up(Editor *ed) {
 
-    if (!_editor_is_first_line_document(ed)) {
+    if (!_editor_is_at_first_line_document(ed)) {
         ed->cursor_line--;
 
         // check for overshoot on line above
@@ -281,7 +309,7 @@ void editor_move_up(Editor *ed) {
 }
 
 void editor_move_down(Editor *ed) {
-    if (!_editor_is_last_line_document(ed)) {
+    if (!_editor_is_at_last_line_document(ed)) {
         ed->cursor_line++;
 
         // check for overshoot on line below
@@ -301,7 +329,7 @@ void editor_move_down(Editor *ed) {
 }
 
 void editor_move_end_line(Editor *ed) {
-    bool  empty = _editor_is_empty_line(ed);
+    bool  empty = _editor_is_at_empty_line(ed);
     size_t size = _editor_get_current_string(ed)->size;
     ed->cursor_column = empty ? 0 : size - 1; // check for empty line (size == 0)
 }
@@ -329,7 +357,7 @@ void editor_move_start_document(Editor *ed) {
 }
 
 void editor_move_end_line_append_mode(Editor *ed) {
-    if (_editor_is_empty_line(ed))
+    if (_editor_is_at_empty_line(ed))
         return;
 
     editor_move_end_line(ed);

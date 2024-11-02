@@ -34,7 +34,7 @@ typedef struct {
 
 extern Lines lines_new         (void);
 extern void  lines_append      (Lines *l, const String *s);
-extern void  lines_remove      (Lines *l, size_t index); // TODO: this
+extern void  lines_delete      (Lines *l, size_t index); // TODO: this
 extern void  lines_insert_after(Lines *l, size_t index, String *s);
 
 
@@ -45,7 +45,7 @@ typedef enum {
     MODE_COMMAND,
     MODE_INSERT,
     MODE_APPEND,
-} Modes;
+} Mode;
 
 #pragma GCC diagnostic ignored "-Wunused-variable"
 static const char *modes_repr[] = {
@@ -58,7 +58,7 @@ static const char *modes_repr[] = {
 typedef struct {
     int cursor_column;
     int cursor_line;
-    Modes mode;
+    Mode mode;
     Lines text;
 
     // bool last_char; // TODO: this
@@ -79,12 +79,14 @@ extern void   editor_write  (Editor *ed, const char *filename); // writes the co
 // Edit Operations
 extern void editor_insert           (Editor *ed, char c);
 extern void editor_delete_char      (Editor *ed); // delete char under cursor
+extern void editor_delete_line      (Editor *ed);
 extern void editor_insert_line_after(Editor *ed);
+extern void editor_set_mode         (Editor *ed, Mode mode);
 
 // Read Operations
 extern char*  editor_get_string_by_index(Editor *ed, size_t index);
 extern size_t editor_get_document_size  (Editor *ed);
-extern Modes  editor_get_current_mode   (Editor *ed);
+extern Mode   editor_get_current_mode   (Editor *ed);
 
 // Move Operations
 extern void editor_move_right                     (Editor *ed);

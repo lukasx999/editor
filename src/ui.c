@@ -38,8 +38,10 @@ static void _ui_draw_text(Ui *ui) {
     if (len + 1 > (size_t) ui->text_area_height)
         len = ui->text_area_height;
 
+    size_t offset = 0;
     // TODO: refactor this! (using helper functions)
     // keep offset in bounds
+    #if 0
     size_t offset = ui->scroll_offset;
     if (ui->text_area_height + offset > editor_get_document_size(ui->editor)) {
         // less lines than canvas size
@@ -49,6 +51,7 @@ static void _ui_draw_text(Ui *ui) {
         else
             ui->scroll_offset = offset = ui->editor->text.size - ui->text_area_height;
     }
+    #endif
 
     for (size_t i = 0; i < len; ++i) {
         mvwprintw(ui->window_text_area,
@@ -154,6 +157,7 @@ void ui_loop(Ui *ui) {
         // sanity check
         assert(ui->editor->cursor_line   >= 0);
         assert(ui->editor->cursor_column >= 0);
+        assert((size_t) ui->editor->cursor_line < editor_get_document_size(ui->editor));
 
 
 
@@ -170,70 +174,93 @@ void ui_loop(Ui *ui) {
                         if (ui->editor->filename != NULL) // dont try to write empty buffer
                             editor_write(ui->editor, NULL);
                         break;
+
                     case 'q':
                         quit = true;
                         break;
+
                     case 45: // Minus
                         _ui_scroll_up(ui);
                         break;
+
                     case 43: // Plus
                         _ui_scroll_down(ui);
                         break;
+
                     case 'x':
                         editor_delete_char(ui->editor);
                         break;
-                    case 'i':
-                        ui->editor->mode = MODE_INSERT;
+
+                    case 'd':
+                        editor_delete_line(ui->editor);
                         break;
+
+                    case 'i':
+                        editor_set_mode(ui->editor, MODE_INSERT);
+                        break;
+
                     case 'o':
                         editor_insert_line_after(ui->editor);
                         editor_move_down(ui->editor);
-                        ui->editor->mode = MODE_INSERT;
+                        editor_set_mode(ui->editor, MODE_INSERT);
                         break;
+
                     case 'I':
                         editor_move_start_line(ui->editor);
-                        ui->editor->mode = MODE_INSERT;
+                        editor_set_mode(ui->editor, MODE_INSERT);
                         break;
+
                     case 'G':
                         editor_move_end_document(ui->editor);
                         break;
+
                     case 'g':
                         editor_move_start_document(ui->editor);
                         break;
+
                     case 'A': {
                         editor_move_end_line_append_mode(ui->editor);
-                        ui->editor->mode = MODE_APPEND;
+                        editor_set_mode(ui->editor, MODE_APPEND);
                     } break;
+
                     case '$': {
                         editor_move_end_line(ui->editor);
                     } break;
+
                     case '_':
                         editor_move_start_line_skip_whitespace(ui->editor);
                         break;
+
                     case '0':
                         editor_move_start_line(ui->editor);
                         break;
+
                     case 'a':
-                        ui->editor->mode = MODE_INSERT;
+                        editor_set_mode(ui->editor, MODE_INSERT);
                         ui->editor->cursor_column++;
                         break;
+
                     case ':':
-                        ui->editor->mode = MODE_COMMAND;
+                        editor_set_mode(ui->editor, MODE_COMMAND);
                         break;
+
                     case 'h':
                         editor_move_left(ui->editor);
                         break;
+
                     case 'l':
                         editor_move_right(ui->editor);
                         break;
+
                     case 'j':
                         editor_move_down(ui->editor);
                         break;
+
                     case 'k':
                         editor_move_up(ui->editor);
                         break;
-                }
 
+                }
 
             } break;
 
@@ -241,7 +268,7 @@ void ui_loop(Ui *ui) {
             case MODE_INSERT: {
 
                 if (c == KEY_ESCAPE) {
-                    ui->editor->mode = MODE_NORMAL;
+                    editor_set_mode(ui->editor, MODE_NORMAL);
                     editor_move_left(ui->editor);
                     break;
                 }
@@ -255,7 +282,7 @@ void ui_loop(Ui *ui) {
 
             case MODE_COMMAND: {
                 if (c == KEY_ESCAPE) {
-                    ui->editor->mode = MODE_NORMAL;
+                    editor_set_mode(ui->editor, MODE_NORMAL);
                     break;
                 }
             } break;
