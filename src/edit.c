@@ -130,7 +130,7 @@ void editor_write(Editor *ed, const char *filename) {
 
 
 /* --------------- */
-/* Char Operations */
+/* Edit Operations */
 /* --------------- */
 
 void editor_delete_char(Editor *ed) {

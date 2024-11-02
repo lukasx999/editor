@@ -76,7 +76,7 @@ extern Editor editor_new    (const char *filename); // filename == NULL will cre
 extern void   editor_destroy(Editor *ed);
 extern void   editor_write  (Editor *ed, const char *filename); // writes the contents of `text` into the opened file - filename == NULL will write into the already opened file, otherwise text will be written to filename
 
-// Char Operations
+// Edit Operations
 extern void editor_insert           (Editor *ed, char c);
 extern void editor_delete_char      (Editor *ed); // delete char under cursor
 extern void editor_insert_line_after(Editor *ed);
