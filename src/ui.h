@@ -23,9 +23,11 @@ typedef struct {
     Editor *editor;
 
     WINDOW *window_text_area; // bounds of actual text
-    bool text_border;
-    int visual_cursor_line;
-    int visual_cursor_column;
+    int     scroll_offset;
+    int     text_area_height;
+    bool    text_border;
+    // int     visual_cursor_line;
+    // int     visual_cursor_column;
 } Ui;
 
 extern Ui   ui_init   (Editor *ed);

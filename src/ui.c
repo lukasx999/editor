@@ -7,6 +7,7 @@
 #include <ncurses.h>
 
 #include "./ui.h"
+#include "./log.h"
 
 
 
@@ -29,13 +30,44 @@ static void _ui_draw_border(WINDOW *w) {
 }
 
 static void _ui_draw_text(Ui *ui) {
-    for (size_t i = 0; i < ui->editor->text.size; ++i) {
-        mvwprintw(ui->window_text_area,
-                  i + ui->text_border,
-                  ui->text_border,
-                  "%s", ui->editor->text.lines[i].str);
+
+    // TODO: this
+    size_t len = editor_get_document_size(ui->editor);
+    if (len + 1 > (size_t) ui->text_area_height)
+        len = ui->text_area_height;
+
+    // TODO: refactor this!
+    // keep offset in bounds
+    size_t offset = ui->scroll_offset;
+    if (ui->text_area_height + offset > editor_get_document_size(ui->editor)) {
+        // less lines than canvas size
+        if (editor_get_document_size(ui->editor) < (size_t) ui->text_area_height)
+            ui->scroll_offset = offset = 0;
+        // at the end
+        else
+            ui->scroll_offset = offset = ui->editor->text.size - ui->text_area_height;
     }
+
+    for (size_t i = 0; i < len; ++i) {
+        mvwprintw(ui->window_text_area,
+                  i + ui->text_border, // interpreting bool as decimal!
+                  ui->text_border,
+                  "%s", editor_get_string_by_index(ui->editor, i+offset));
+    }
+
 }
+
+static void _ui_scroll_down(Ui *ui) {
+    ui->scroll_offset++;
+}
+
+static void _ui_scroll_up(Ui *ui) {
+    if (ui->scroll_offset == 0)
+        return;
+    ui->scroll_offset--;
+}
+
+
 
 
 Ui ui_init(Editor *ed) {
@@ -49,24 +81,28 @@ Ui ui_init(Editor *ed) {
     noecho();
     cbreak();
     wbkgd(window, COLOR_PAIR(PAIR_DEFAULT)); // set bg color
+    keypad(window, true);
+    // intrflush(window, false);
 
-    int columns = getmaxx(window);
-    int lines = getmaxy(window);
-    int status_space = 5;
-    int status_top_height = 3;
-    WINDOW *text_area = newwin(lines - status_space,
-                               columns,
-                               status_top_height,
-                               0);
+    // TODO: clean up this mess
+    bool border           = true;
+    int status_space      = 4;
+    int status_top_height = 2;
+    int text_area_height  = getmaxy(window) - status_space;
+    WINDOW *text_area     = newwin(text_area_height,
+                                   getmaxx(window),
+                                   status_top_height,
+                                   0);
 
     wbkgd(text_area, COLOR_PAIR(PAIR_TEXT));
-
 
     Ui ui = {
         .window           = window,
         .editor           = ed,
         .window_text_area = text_area,
-        .text_border      = false,
+        .text_border      = border,
+        .text_area_height = text_area_height - 2 * border,
+        .scroll_offset    = 0,
     };
 
     return ui;
@@ -130,11 +166,20 @@ void ui_loop(Ui *ui) {
                     case 'q':
                         quit = true;
                         break;
+                    case 45: // Minus
+                        _ui_scroll_up(ui);
+                        break;
+                    case 43: // Plus
+                        _ui_scroll_down(ui);
+                        break;
                     case 'x':
                         editor_delete_char(ui->editor);
                         break;
                     case 'i':
                         ui->editor->mode = MODE_INSERT;
+                        break;
+                    case 'o':
+                        editor_insert_line_after(ui->editor);
                         break;
                     case 'I':
                         editor_move_start_line(ui->editor);

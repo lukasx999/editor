@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "./edit.h"
 
@@ -35,4 +36,21 @@ void lines_remove(Lines *l, size_t index) {
     // memmove(dest, src, n);
 
     --l->size;
+}
+
+void lines_insert_after(Lines *l, size_t index, String *s) {
+
+    assert(index < l->size);
+
+    ++l->capacity;
+    ++l->size;
+    l->lines = realloc(l->lines, l->capacity * sizeof(String));
+
+    const void *src = l->lines + index + 1;
+    void *dest      = l->lines + index + 2;
+    size_t n        = (l->size - index - 1) * sizeof(String);
+
+    memmove(dest, src, n);
+
+    l->lines[index++] = *s;
 }

@@ -1,6 +1,7 @@
 # TODO
 
 - [ ] command mode cmds
+- [ ] show file information like line count in status bar
 - [ ] keychords
 - [ ] truncating lines
 - [ ] scrolling text

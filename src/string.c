@@ -84,5 +84,5 @@ void string_insert_char_after(String *s, size_t index, char c) {
 
     memmove(dest, src, n);
 
-    s->str[index+1] = c;
+    s->str[index++] = c;
 }

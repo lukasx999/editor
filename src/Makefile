@@ -6,7 +6,7 @@ all: main.o ui.o edit.o string.o lines.o edit.h ui.h
 	@$(CC) $(CFLAGS) $(LIBS) $^ -o edit
 	@echo CC *.o
 
-%.o: %.c Makefile
+%.o: %.c %.h Makefile
 	@$(CC) $(CFLAGS) -c $< -o $@ 
 	@echo CC $<
 

@@ -32,9 +32,10 @@ typedef struct {
     String *lines;
 } Lines;
 
-extern Lines lines_new(void);
-extern void  lines_append(Lines *l, const String *s);
-extern void  lines_remove(Lines *l, size_t index); // TODO: this
+extern Lines lines_new         (void);
+extern void  lines_append      (Lines *l, const String *s);
+extern void  lines_remove      (Lines *l, size_t index); // TODO: this
+extern void  lines_insert_after(Lines *l, size_t index, String *s);
 
 
 
@@ -76,8 +77,13 @@ extern void   editor_destroy(Editor *ed);
 extern void   editor_write  (Editor *ed, const char *filename); // writes the contents of `text` into the opened file - filename == NULL will write into the already opened file, otherwise text will be written to filename
 
 // Char Operations
-extern void editor_insert     (Editor *ed, char c);
-extern void editor_delete_char(Editor *ed); // delete char under cursor
+extern void editor_insert           (Editor *ed, char c);
+extern void editor_delete_char      (Editor *ed); // delete char under cursor
+extern void editor_insert_line_after(Editor *ed);
+
+// Read Operations
+extern char* editor_get_string_by_index(Editor *ed, size_t index);
+extern size_t editor_get_document_size (Editor *ed);
 
 // Move Operations
 extern void editor_move_right                     (Editor *ed);

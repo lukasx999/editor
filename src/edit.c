@@ -91,6 +91,13 @@ Editor editor_new(const char *filename) {
         memset(buf, 0, BUFSIZ);
     }
 
+    // TODO: editor_create_empty_line
+    // Create empty line if file is empty
+    if (editor_get_document_size(&ed) == 0) {
+        String s = string_from("");
+        lines_append(&ed.text, &s);
+    }
+
     fclose(f);
     return ed;
 
@@ -155,6 +162,35 @@ void editor_insert(Editor *ed, char c) {
 
     ed->cursor_column++;
 }
+
+void editor_insert_line_after(Editor *ed) {
+    String s = string_from("");
+    lines_insert_after(&ed->text, ed->cursor_line, &s);
+}
+
+
+/* --------------- */
+/* --------------- */
+/* --------------- */
+
+
+
+/* --------------- */
+/* Read Operations */
+/* --------------- */
+
+
+
+char* editor_get_string_by_index(Editor *ed, size_t index) {
+    assert(index < ed->text.size);
+    return ed->text.lines[index].str;
+}
+
+size_t editor_get_document_size(Editor *ed) {
+    return ed->text.size;
+}
+
+
 
 /* --------------- */
 /* --------------- */
