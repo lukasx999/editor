@@ -77,8 +77,8 @@ Editor editor_new(const char *filename) {
         .cursor_column   = 0,
         .mode            = MODE_NORMAL,
         .filename        = filename,
-        .wrap_vertical   = true,
-        .wrap_horizontal = true,
+        .wrap_vertical   = false,
+        .wrap_horizontal = false,
     };
 
     if (ed.filename == NULL) { // create empty buffer
@@ -159,6 +159,16 @@ void editor_delete_char(Editor *ed) {
 
 }
 
+void editor_delete_char_backspace(Editor *ed) {
+
+    if (_editor_is_at_start_of_line(ed))
+        return;
+
+    editor_move_left(ed);
+    string_delete(_editor_get_current_string(ed), ed->cursor_column);
+
+}
+
 void editor_delete_line(Editor *ed) {
 
     if (editor_get_document_size(ed) == 1) {
@@ -170,6 +180,11 @@ void editor_delete_line(Editor *ed) {
     }
 
     lines_delete(&ed->text, ed->cursor_line);
+
+    // Bounds Checking
+
+    if (_editor_is_over_end_of_line(ed))
+        editor_move_end_line(ed);
 
     if (_editor_is_over_last_line_document(ed))
         editor_move_up(ed);
@@ -227,6 +242,10 @@ size_t editor_get_document_size(Editor *ed) {
 
 Mode editor_get_current_mode(Editor *ed) {
     return ed->mode;
+}
+
+size_t editor_get_current_string_length(Editor *ed) {
+    return _editor_get_current_string(ed)->size;
 }
 
 

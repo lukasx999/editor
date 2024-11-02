@@ -3,6 +3,9 @@
 #include <string.h>
 
 #include "./edit.h"
+#include "./util.h"
+
+
 
 Lines lines_new(void) {
     Lines new = {
@@ -32,7 +35,7 @@ void lines_delete(Lines *l, size_t index) {
 
     void *dest      = l->lines + index;
     const void *src = l->lines + index + 1;
-    size_t n        = l->size  - index + 1;
+    size_t n        = l->size  - index;
 
     memmove(dest, src, n * sizeof(String));
 
@@ -46,10 +49,12 @@ void lines_insert_after(Lines *l, size_t index, String *s) {
     ++l->capacity;
     ++l->size;
     l->lines = realloc(l->lines, l->capacity * sizeof(String));
+    if (l->lines == NULL)
+        HANDLE_ERROR("realloc() failed");
 
     const void *src = l->lines + index + 1;
     void *dest      = l->lines + index + 2;
-    size_t n        = l->size  - index - 1;
+    size_t n        = l->size  - index - 2;
 
     memmove(dest, src, n * sizeof(String));
 

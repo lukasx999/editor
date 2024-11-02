@@ -13,15 +13,21 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +33 ~/Code/Projects/edit/src/main.c
-badd +82 ~/Code/Projects/edit/src/edit.h
-badd +166 ~/Code/Projects/edit/src/edit.c
-badd +39 ~/Code/Projects/edit/src/ui.c
-badd +25 ~/Code/Projects/edit/src/ui.h
+badd +35 ~/Code/Projects/edit/src/main.c
+badd +103 ~/Code/Projects/edit/src/edit.h
+badd +236 ~/Code/Projects/edit/src/edit.c
+badd +278 ~/Code/Projects/edit/src/ui.c
 argglobal
 %argdel
 $argadd main.c
 edit ~/Code/Projects/edit/src/ui.c
+wincmd t
+let s:save_winminheight = &winminheight
+let s:save_winminwidth = &winminwidth
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
 argglobal
 setlocal fdm=expr
 setlocal fde=nvim_treesitter#foldexpr()
@@ -31,12 +37,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal nofen
-let s:l = 39 - ((9 * winheight(0) + 16) / 33)
+let s:l = 278 - ((18 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 39
-normal! 05|
+keepjumps 278
+normal! 017|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -44,6 +50,8 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
+let &winminheight = s:save_winminheight
+let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)

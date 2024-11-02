@@ -77,16 +77,18 @@ extern void   editor_destroy(Editor *ed);
 extern void   editor_write  (Editor *ed, const char *filename); // writes the contents of `text` into the opened file - filename == NULL will write into the already opened file, otherwise text will be written to filename
 
 // Edit Operations
-extern void editor_insert           (Editor *ed, char c);
-extern void editor_delete_char      (Editor *ed); // delete char under cursor
-extern void editor_delete_line      (Editor *ed);
-extern void editor_insert_line_after(Editor *ed);
-extern void editor_set_mode         (Editor *ed, Mode mode);
+extern void editor_insert               (Editor *ed, char c);
+extern void editor_delete_char          (Editor *ed); // delete char under cursor
+extern void editor_delete_char_backspace(Editor *ed);
+extern void editor_delete_line          (Editor *ed);
+extern void editor_insert_line_after    (Editor *ed);
+extern void editor_set_mode             (Editor *ed, Mode mode);
 
 // Read Operations
-extern char*  editor_get_string_by_index(Editor *ed, size_t index);
-extern size_t editor_get_document_size  (Editor *ed);
-extern Mode   editor_get_current_mode   (Editor *ed);
+extern char*  editor_get_string_by_index      (Editor *ed, size_t index);
+extern size_t editor_get_document_size        (Editor *ed);
+extern Mode   editor_get_current_mode         (Editor *ed);
+extern size_t editor_get_current_string_length(Editor *ed);
 
 // Move Operations
 extern void editor_move_right                     (Editor *ed);

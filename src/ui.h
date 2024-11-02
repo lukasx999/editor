@@ -7,8 +7,8 @@
 #include <ncurses.h>
 #include "./edit.h"
 
-
 #define KEY_ESCAPE 27
+#define KEY_RETURN 10
 
 typedef enum {
     PAIR_DEFAULT    = 0,

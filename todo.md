@@ -1,7 +1,7 @@
 # TODO
 
+- [ ] remove wrapping?
 - [ ] command mode cmds
-- [ ] deleting lines
 - [ ] better storing of options and keybinds
 - [ ] cursor-bound scrolling
 
@@ -19,3 +19,4 @@
 - [ ] removing lines
 - [ ] use setjmp for crashes
 - [x] remove border around text area
+- [x] deleting lines

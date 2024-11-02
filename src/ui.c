@@ -12,7 +12,6 @@
 #include "./log.h"
 
 
-
 static void _quit(void) {
     endwin();
 }
@@ -38,7 +37,7 @@ static void _ui_draw_text(Ui *ui) {
     if (len + 1 > (size_t) ui->text_area_height)
         len = ui->text_area_height;
 
-    size_t offset = 0;
+    // BUG: long lines causes segfaults
     // TODO: refactor this! (using helper functions)
     // keep offset in bounds
     #if 0
@@ -51,6 +50,8 @@ static void _ui_draw_text(Ui *ui) {
         else
             ui->scroll_offset = offset = ui->editor->text.size - ui->text_area_height;
     }
+    #else
+    size_t offset = 0;
     #endif
 
     for (size_t i = 0; i < len; ++i) {
@@ -162,7 +163,7 @@ void ui_loop(Ui *ui) {
 
 
         curs_set(1);
-        char c = getch();
+        int c = getch();
 
         werase(ui->window);
         werase(ui->window_text_area);
@@ -273,7 +274,18 @@ void ui_loop(Ui *ui) {
                     break;
                 }
 
-                if (!isalpha(c))
+                // TODO: splitting text
+                if (c == KEY_RETURN) {
+                    editor_insert_line_after(ui->editor);
+                    break;
+                }
+
+                if (c == KEY_BACKSPACE) {
+                    editor_delete_char_backspace(ui->editor);
+                    break;
+                }
+
+                if (!isprint(c))
                     break;
 
                 editor_insert(ui->editor, c);

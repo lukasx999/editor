@@ -71,11 +71,11 @@ void string_insert_char_before(String *s, size_t index, char c) {
     if (s->str == NULL)
         HANDLE_ERROR("realloc() failed");
 
-    const void *src = s->str + index;
-    void *dest      = s->str + index + 1;
-    size_t n        = (s->size - index - 1) * sizeof(char);
+    const void *src = s->str  + index;
+    void *dest      = s->str  + index + 1;
+    size_t n        = s->size - index - 1;
 
-    memmove(dest, src, n);
+    memmove(dest, src, n * sizeof(char));
 
     s->str[index] = c;
 
