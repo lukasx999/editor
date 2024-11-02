@@ -13,36 +13,43 @@
 /* Helper Functions */
 /* ---------------- */
 
-static String* _editor_get_current_string(Editor *ed) {
+static inline String*
+_editor_get_current_string(Editor *ed) {
     return &ed->text.lines[ed->cursor_line];
 }
 
-static bool _editor_is_last_line_document(Editor *ed) {
+static inline bool
+_editor_is_last_line_document(Editor *ed) {
     // checks if the current line (indicated by `cursor_line`) is the last line in the document
-    return (size_t) ed->cursor_line + 1 == ed->text.size;
+    return (size_t) ed->cursor_line + 1 == editor_get_document_size(ed);
 }
 
-static bool _editor_is_first_line_document(Editor *ed) {
+static inline bool
+_editor_is_first_line_document(Editor *ed) {
     // checks if the current line (indicated by `cursor_line`) is the first line in the document
     return ed->cursor_line == 0;
 }
 
-static bool _editor_is_at_end_of_line(Editor *ed) {
+static inline bool
+_editor_is_at_end_of_line(Editor *ed) {
     // returns true if the cursor is hovering over the last char in the line
     return (size_t) ed->cursor_column + 1 == _editor_get_current_string(ed)->size;
 }
 
-static bool _editor_is_over_end_of_line(Editor *ed) {
+static inline bool
+_editor_is_over_end_of_line(Editor *ed) {
     // returns true if the cursor is out of bounds of the current line
     return (size_t) ed->cursor_column + 1 > _editor_get_current_string(ed)->size;
 }
 
-static bool _editor_is_at_start_of_line(Editor *ed) {
+static inline bool
+_editor_is_at_start_of_line(Editor *ed) {
     // returns true if the cursor is hovering over the first char in the line
     return ed->cursor_column == 0;
 }
 
-static bool _editor_is_empty_line(Editor *ed) {
+static inline bool
+_editor_is_empty_line(Editor *ed) {
     // returns true if the cursor is hovering over an empty line
     return _editor_get_current_string(ed)->size == 0;
 }
@@ -188,6 +195,10 @@ char* editor_get_string_by_index(Editor *ed, size_t index) {
 
 size_t editor_get_document_size(Editor *ed) {
     return ed->text.size;
+}
+
+Modes editor_get_current_mode(Editor *ed) {
+    return ed->mode;
 }
 
 

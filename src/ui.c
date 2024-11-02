@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <ctype.h>
+
 #include <ncurses.h>
 
 #include "./ui.h"
@@ -68,10 +70,7 @@ static void _ui_scroll_up(Ui *ui) {
 }
 
 
-
-
-Ui ui_init(Editor *ed) {
-    WINDOW *window = initscr();
+static void _ui_ncurses_init(WINDOW *window) {
     start_color();
     atexit(_quit);
     init_pair(PAIR_STATUSLINE, COLOR_RED, COLOR_BLACK);
@@ -84,6 +83,13 @@ Ui ui_init(Editor *ed) {
     keypad(window, true);
     // intrflush(window, false);
     set_escdelay(0);
+}
+
+
+Ui ui_init(Editor *ed) {
+    WINDOW *window = initscr();
+
+    _ui_ncurses_init(window);
 
     // TODO: clean up this mess
     bool border           = true;
@@ -157,7 +163,7 @@ void ui_loop(Ui *ui) {
         werase(ui->window);
         werase(ui->window_text_area);
 
-        switch (ui->editor->mode) {
+        switch (editor_get_current_mode(ui->editor)) {
             case MODE_NORMAL: {
                 switch (c) {
                     case 'W':
@@ -239,6 +245,9 @@ void ui_loop(Ui *ui) {
                     editor_move_left(ui->editor);
                     break;
                 }
+
+                if (!isalpha(c))
+                    break;
 
                 editor_insert(ui->editor, c);
 

@@ -1,8 +1,11 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #include "./edit.h"
+#include "./util.h"
 
 
 
@@ -13,6 +16,8 @@ String string_new(void) {
         .capacity = 5,
     };
     new.str = calloc(new.capacity, sizeof(char));
+    if (new.str == NULL)
+        HANDLE_ERROR("calloc() failed");
     return new;
 }
 
@@ -22,6 +27,8 @@ String string_from(const char *str) {
         .capacity = strlen(str) + 1, // +1 for terminating nullbyte
     };
     new.str = calloc(new.capacity, sizeof(char));
+    if (new.str == NULL)
+        HANDLE_ERROR("calloc() failed");
     strncpy(new.str, str, new.size);
     return new;
 }
@@ -42,6 +49,8 @@ void string_append_char(String *s, char c) {
     if (s->size + 2 > s->capacity) { // +1 for keeping nullbyte at the end
         s->capacity *= 2;
         s->str = realloc(s->str, s->capacity * sizeof(char));
+        if (s->str == NULL)
+            HANDLE_ERROR("realloc() failed");
     }
     s->str[s->size++] = c;
 }
@@ -59,6 +68,8 @@ void string_insert_char_before(String *s, size_t index, char c) {
     ++s->capacity;
     ++s->size;
     s->str = realloc(s->str, s->capacity * sizeof(char));
+    if (s->str == NULL)
+        HANDLE_ERROR("realloc() failed");
 
     const void *src = s->str + index;
     void *dest      = s->str + index + 1;
@@ -77,6 +88,8 @@ void string_insert_char_after(String *s, size_t index, char c) {
     ++s->capacity;
     ++s->size;
     s->str = realloc(s->str, s->capacity * sizeof(char));
+    if (s->str == NULL)
+        HANDLE_ERROR("realloc() failed");
 
     const void *src = s->str + index + 1;
     void *dest      = s->str + index + 2;
