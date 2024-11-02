@@ -36,7 +36,7 @@ static void _ui_draw_text(Ui *ui) {
     if (len + 1 > (size_t) ui->text_area_height)
         len = ui->text_area_height;
 
-    // TODO: refactor this!
+    // TODO: refactor this! (using helper functions)
     // keep offset in bounds
     size_t offset = ui->scroll_offset;
     if (ui->text_area_height + offset > editor_get_document_size(ui->editor)) {
@@ -83,6 +83,7 @@ Ui ui_init(Editor *ed) {
     wbkgd(window, COLOR_PAIR(PAIR_DEFAULT)); // set bg color
     keypad(window, true);
     // intrflush(window, false);
+    set_escdelay(0);
 
     // TODO: clean up this mess
     bool border           = true;
@@ -180,6 +181,8 @@ void ui_loop(Ui *ui) {
                         break;
                     case 'o':
                         editor_insert_line_after(ui->editor);
+                        editor_move_down(ui->editor);
+                        ui->editor->mode = MODE_INSERT;
                         break;
                     case 'I':
                         editor_move_start_line(ui->editor);

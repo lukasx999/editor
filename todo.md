@@ -1,6 +1,10 @@
 # TODO
 
 - [ ] command mode cmds
+- [ ] deleting lines
+- [ ] better storing of options and keybinds
+- [ ] cursor-bound scrolling
+
 - [ ] show file information like line count in status bar
 - [ ] keychords
 - [ ] truncating lines
@@ -11,8 +15,6 @@
 - [ ] top statusbar for showing file information (stat)
 - [ ] empty buffers
 - [ ] visual mode
-- [ ] selector for editor options (eg: config file)
-  - [ ] custom keybinds
 - [ ] find a name (ced?)
 - [ ] removing lines
 - [ ] use setjmp for crashes

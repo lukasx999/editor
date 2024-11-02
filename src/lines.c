@@ -52,5 +52,5 @@ void lines_insert_after(Lines *l, size_t index, String *s) {
 
     memmove(dest, src, n);
 
-    l->lines[index++] = *s;
+    l->lines[index+1] = *s; // TODO: +1 is ok, but ++ causes double free???
 }
