@@ -20,7 +20,7 @@ Lines lines_new(void) {
 
 void lines_append(Lines *l, const String *s) {
 
-    if (l->size + 1 > l->capacity) {
+    if (l->size == l->capacity) {
         l->capacity *= 2;
         l->lines = realloc(l->lines, l->capacity * sizeof(String));
     }
