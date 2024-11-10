@@ -11,6 +11,7 @@ Lines lines_new(void) {
     Lines new = {
         .capacity = 5,
         .size     = 0,
+        .lines    = NULL,
     };
 
     new.lines = malloc(new.capacity * sizeof(String));

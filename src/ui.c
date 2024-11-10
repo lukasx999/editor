@@ -126,6 +126,8 @@ void ui_destroy(Ui *ui) {
 
 
 // TODO: scrollable text + wrapping
+// TODO: tabs for indenting
+// TODO: joining lines
 
 void ui_loop(Ui *ui) {
 
@@ -194,6 +196,14 @@ void ui_loop(Ui *ui) {
 
                     case 'd':
                         editor_delete_line(ui->editor);
+                        break;
+
+                    case 'D':
+                        editor_delete_till_end_of_line(ui->editor);
+                        break;
+
+                    case 'J':
+                        // TODO: join lines
                         break;
 
                     case 'i':
@@ -265,6 +275,8 @@ void ui_loop(Ui *ui) {
 
             } break;
 
+            // TODO: snapping behaviour: do bounds check, and move cursor back into canvas
+
             case MODE_APPEND:
             case MODE_INSERT: {
 
@@ -276,7 +288,8 @@ void ui_loop(Ui *ui) {
 
                 // TODO: splitting text
                 if (c == KEY_RETURN) {
-                    editor_insert_line_after(ui->editor);
+                    // editor_insert_line_after(ui->editor);
+                    editor_split_line(ui->editor);
                     break;
                 }
 

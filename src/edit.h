@@ -16,11 +16,12 @@ typedef struct {
 
 extern String string_new (void);
 extern String string_from(const char *str);
-extern void   string_delete            (String *s, size_t index);
-extern void   string_append_char       (String *s, char c);
-extern void   string_append_string     (String *s, const String *other);
-extern void   string_insert_char_before(String *s, size_t index, char c);
-extern void   string_insert_char_after (String *s, size_t index, char c);
+extern void string_delete_char            (String *s, size_t index);
+extern void string_append_char            (String *s, char c);
+extern void string_append_string          (String *s, const String *other);
+extern void string_insert_char_before     (String *s, size_t index, char c);
+extern void string_insert_char_after      (String *s, size_t index, char c);
+extern void string_delete_till_end_of_string(String *s, size_t index); // index is inclusive
 
 
 
@@ -83,6 +84,10 @@ extern void editor_delete_char_backspace(Editor *ed);
 extern void editor_delete_line          (Editor *ed);
 extern void editor_insert_line_after    (Editor *ed);
 extern void editor_set_mode             (Editor *ed, Mode mode);
+
+extern void editor_delete_till_end_of_line(Editor *ed);
+extern void editor_split_line(Editor *ed);
+
 
 // Read Operations
 extern char*  editor_get_string_by_index      (Editor *ed, size_t index);

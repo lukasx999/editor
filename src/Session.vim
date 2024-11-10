@@ -13,10 +13,9 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +35 ~/Code/Projects/edit/src/main.c
-badd +103 ~/Code/Projects/edit/src/edit.h
-badd +236 ~/Code/Projects/edit/src/edit.c
-badd +278 ~/Code/Projects/edit/src/ui.c
+badd +88 ~/Code/Projects/edit/src/edit.h
+badd +172 ~/Code/Projects/edit/src/edit.c
+badd +204 ~/Code/Projects/edit/src/ui.c
 argglobal
 %argdel
 $argadd main.c
@@ -29,6 +28,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
+balt ~/Code/Projects/edit/src/edit.c
 setlocal fdm=expr
 setlocal fde=nvim_treesitter#foldexpr()
 setlocal fmr={{{,}}}
@@ -37,12 +37,12 @@ setlocal fdl=99
 setlocal fml=1
 setlocal fdn=20
 setlocal nofen
-let s:l = 278 - ((18 * winheight(0) + 18) / 37)
+let s:l = 204 - ((27 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 278
-normal! 017|
+keepjumps 204
+normal! 025|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

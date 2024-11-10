@@ -60,6 +60,16 @@ _editor_is_at_empty_line(Editor *ed) {
     return _editor_get_current_string(ed)->size == 0;
 }
 
+// TODO: this
+// static inline void
+// _editor_snap(Editor *ed) {
+//     if (_editor_is_over_end_of_line(ed)) {
+//         ...
+//     }
+// }
+
+
+
 /* ---------------- */
 /* ---------------- */
 /* ---------------- */
@@ -146,12 +156,39 @@ void editor_write(Editor *ed, const char *filename) {
 /* Edit Operations */
 /* --------------- */
 
+
+void editor_delete_till_end_of_line(Editor *ed) {
+
+    string_delete_till_end_of_string(
+        _editor_get_current_string(ed), ed->cursor_column
+    );
+    editor_move_end_line(ed);
+
+}
+
+
+void editor_split_line(Editor *ed) {
+
+    String new = string_from(
+        _editor_get_current_string(ed)->str + ed->cursor_column
+    );
+
+    lines_insert_after(&ed->text, ed->cursor_line, &new);
+    editor_delete_till_end_of_line(ed);
+
+    editor_move_down(ed);
+    editor_move_start_line(ed);
+
+}
+
+
+
 void editor_delete_char(Editor *ed) {
 
     if (_editor_is_at_empty_line(ed)) // cannot delete empty line
         return;
 
-    string_delete(_editor_get_current_string(ed), ed->cursor_column);
+    string_delete_char(_editor_get_current_string(ed), ed->cursor_column);
 
     // out of bounds check after deleting
     if (_editor_is_over_end_of_line(ed))
@@ -165,7 +202,7 @@ void editor_delete_char_backspace(Editor *ed) {
         return;
 
     editor_move_left(ed);
-    string_delete(_editor_get_current_string(ed), ed->cursor_column);
+    string_delete_char(_editor_get_current_string(ed), ed->cursor_column);
 
 }
 

@@ -14,6 +14,7 @@ String string_new(void) {
     String new = {
         .size     = 0,
         .capacity = 5,
+        .str      = NULL,
     };
     new.str = calloc(new.capacity, sizeof(char));
     if (new.str == NULL)
@@ -33,15 +34,14 @@ String string_from(const char *str) {
     return new;
 }
 
-void string_delete(String *s, size_t index) {
+void string_delete_char(String *s, size_t index) {
 
     const void *src = s->str + index + 1;
     void *dest      = s->str + index;
     size_t n        = (s->size - index - 1) * sizeof(char);
 
     memmove(dest, src, n);
-    --s->size;
-    s->str[s->size] = '\0';
+    s->str[--s->size] = '\0';
 
 }
 
@@ -91,11 +91,22 @@ void string_insert_char_after(String *s, size_t index, char c) {
     if (s->str == NULL)
         HANDLE_ERROR("realloc() failed");
 
-    const void *src = s->str + index + 1;
-    void *dest      = s->str + index + 2;
-    size_t n        = (s->size - index - 1) * sizeof(char);
+    const void *src = s->str  + index + 1;
+    void *dest      = s->str  + index + 2;
+    size_t n        = s->size - index - 1;
 
-    memmove(dest, src, n);
+    memmove(dest, src, n * sizeof(char));
 
     s->str[index+1] = c;
+}
+
+
+void string_delete_till_end_of_string(String *s, size_t index) {
+
+    void *offset = s->str  + index;
+    size_t n     = s->size - index;
+    memset(offset, '\0', n * sizeof(char));
+
+    s->size = index;
+
 }
