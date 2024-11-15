@@ -19,6 +19,10 @@ Lines lines_new(void) {
     return new;
 }
 
+String* lines_get(Lines *l, size_t index) {
+    return &l->lines[index];
+}
+
 void lines_append(Lines *l, const String *s) {
 
     if (l->size == l->capacity) {
@@ -26,7 +30,8 @@ void lines_append(Lines *l, const String *s) {
         l->lines = realloc(l->lines, l->capacity * sizeof(String));
     }
 
-    l->lines[l->size++] = *s;
+    *lines_get(l, l->size++) = *s;
+
 }
 
 // TODO: this
@@ -59,5 +64,12 @@ void lines_insert_after(Lines *l, size_t index, String *s) {
 
     memmove(dest, src, n * sizeof(String));
 
-    l->lines[index+1] = *s; // TODO: +1 is ok, but ++ causes double free???
+    *lines_get(l, index+1) = *s;
+
+}
+
+void lines_join_next(Lines *l, size_t index) {
+    assert(index < l->size);
+    string_append_string(lines_get(l, index), lines_get(l, index+1));
+    lines_delete(l, index+1);
 }

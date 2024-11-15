@@ -34,6 +34,10 @@ String string_from(const char *str) {
     return new;
 }
 
+char* string_get_char(String *s, size_t index) {
+    return &s->str[index];
+}
+
 void string_delete_char(String *s, size_t index) {
 
     const void *src = s->str + index + 1;
@@ -41,7 +45,7 @@ void string_delete_char(String *s, size_t index) {
     size_t n        = (s->size - index - 1) * sizeof(char);
 
     memmove(dest, src, n);
-    s->str[--s->size] = '\0';
+    *string_get_char(s, --s->size) = '\0';
 
 }
 
@@ -52,7 +56,8 @@ void string_append_char(String *s, char c) {
         if (s->str == NULL)
             HANDLE_ERROR("realloc() failed");
     }
-    s->str[s->size++] = c;
+
+    *string_get_char(s, s->size++) = c;
 }
 
 void string_append_string(String *s, const String *other) {
@@ -77,7 +82,7 @@ void string_insert_char_before(String *s, size_t index, char c) {
 
     memmove(dest, src, n * sizeof(char));
 
-    s->str[index] = c;
+    *string_get_char(s, index) = c;
 
 }
 
@@ -97,7 +102,7 @@ void string_insert_char_after(String *s, size_t index, char c) {
 
     memmove(dest, src, n * sizeof(char));
 
-    s->str[index+1] = c;
+    *string_get_char(s, index+1) = c;
 }
 
 

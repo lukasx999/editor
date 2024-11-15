@@ -181,7 +181,15 @@ void editor_split_line(Editor *ed) {
 
 }
 
+void editor_join_line_next(Editor *ed) {
 
+    if (_editor_is_at_last_line_document(ed)) {
+        return;
+    }
+
+    string_append_char(_editor_get_current_string(ed), ' ');
+    lines_join_next(&ed->text, ed->cursor_line);
+}
 
 void editor_delete_char(Editor *ed) {
 

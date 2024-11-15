@@ -203,7 +203,7 @@ void ui_loop(Ui *ui) {
                         break;
 
                     case 'J':
-                        // TODO: join lines
+                        editor_join_line_next(ui->editor);
                         break;
 
                     case 'i':
@@ -286,9 +286,7 @@ void ui_loop(Ui *ui) {
                     break;
                 }
 
-                // TODO: splitting text
                 if (c == KEY_RETURN) {
-                    // editor_insert_line_after(ui->editor);
                     editor_split_line(ui->editor);
                     break;
                 }

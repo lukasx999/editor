@@ -14,14 +14,15 @@ typedef struct {
     char *str;
 } String;
 
-extern String string_new (void);
-extern String string_from(const char *str);
-extern void string_delete_char            (String *s, size_t index);
-extern void string_append_char            (String *s, char c);
-extern void string_append_string          (String *s, const String *other);
-extern void string_insert_char_before     (String *s, size_t index, char c);
-extern void string_insert_char_after      (String *s, size_t index, char c);
-extern void string_delete_till_end_of_string(String *s, size_t index); // index is inclusive
+extern String string_new     (void);
+extern String string_from    (const char *str);
+extern char*  string_get_char(String *s, size_t index);
+extern void   string_delete_char       (String *s, size_t index);
+extern void   string_append_char       (String *s, char c);
+extern void   string_append_string     (String *s, const String *other);
+extern void   string_insert_char_before(String *s, size_t index, char c);
+extern void   string_insert_char_after (String *s, size_t index, char c);
+extern void   string_delete_till_end_of_string(String *s, size_t index); // index is inclusive
 
 
 
@@ -33,10 +34,12 @@ typedef struct {
     String *lines;
 } Lines;
 
-extern Lines lines_new         (void);
-extern void  lines_append      (Lines *l, const String *s);
-extern void  lines_delete      (Lines *l, size_t index); // TODO: this
-extern void  lines_insert_after(Lines *l, size_t index, String *s);
+extern Lines   lines_new         (void);
+extern String* lines_get         (Lines *l, size_t index);
+extern void    lines_append      (Lines *l, const String *s);
+extern void    lines_delete      (Lines *l, size_t index); // TODO: this
+extern void    lines_insert_after(Lines *l, size_t index, String *s);
+extern void    lines_join_next   (Lines *l, size_t index);
 
 
 
@@ -86,7 +89,8 @@ extern void editor_insert_line_after    (Editor *ed);
 extern void editor_set_mode             (Editor *ed, Mode mode);
 
 extern void editor_delete_till_end_of_line(Editor *ed);
-extern void editor_split_line(Editor *ed);
+extern void editor_split_line             (Editor *ed);
+extern void editor_join_line_next         (Editor *ed);
 
 
 // Read Operations
