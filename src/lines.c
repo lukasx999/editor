@@ -20,6 +20,10 @@ Lines lines_new(void) {
 }
 
 String* lines_get(Lines *l, size_t index) {
+
+    assert(index >= 0);
+    assert(index < l->size);
+
     return &l->lines[index];
 }
 

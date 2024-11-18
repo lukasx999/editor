@@ -35,6 +35,10 @@ String string_from(const char *str) {
 }
 
 char* string_get_char(String *s, size_t index) {
+
+    assert(index >= 0);
+    assert(index < s->size);
+
     return &s->str[index];
 }
 
