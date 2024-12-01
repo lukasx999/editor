@@ -40,26 +40,24 @@ static void _ui_draw_text(Ui *ui) {
 
 
 
-    // BUG: long lines causes segfaults
-    // TODO: refactor this! (using helper functions)
-    // keep offset in bounds
+    // TODO: this
 
 #if 1
 
-    if (ui->text_area_height + ui->scroll_offset > (int) editor_get_document_size(ui->editor)) {
+    if (ui->text_area_height + ui->scroll_offset >
+        (int) editor_get_document_size(ui->editor)) {
 
-        // less lines than canvas size
+        // all lines fit on screen
         if ((size_t) ui->text_area_height > editor_get_document_size(ui->editor)) {
             ui->scroll_offset = 0;
         }
 
         // at the end
         else {
-            ui->scroll_offset = ui->editor->text.size - ui->text_area_height;
+            ui->scroll_offset = editor_get_document_size(ui->editor) - ui->text_area_height;
         }
 
     }
-
 
 #else
     size_t offset = 0;
@@ -172,6 +170,8 @@ void ui_loop(Ui *ui) {
         assert(ui->editor->cursor_line   >= 0);
         assert(ui->editor->cursor_column >= 0);
         assert((size_t) ui->editor->cursor_line < editor_get_document_size(ui->editor));
+
+
 
 
 
