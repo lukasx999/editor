@@ -36,7 +36,7 @@ String string_from(const char *str) {
 
 char* string_get_char(String *s, size_t index) {
 
-    assert(index >= 0);
+    assert((int) index >= 0);
     assert(index < s->size);
 
     return &s->str[index];
@@ -49,7 +49,8 @@ void string_delete_char(String *s, size_t index) {
     size_t n        = (s->size - index - 1) * sizeof(char);
 
     memmove(dest, src, n);
-    *string_get_char(s, --s->size) = '\0';
+    *string_get_char(s, s->size-1) = '\0';
+    --s->size;
 
 }
 

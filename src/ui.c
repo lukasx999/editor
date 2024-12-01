@@ -32,33 +32,44 @@ static void _ui_draw_border(WINDOW *w) {
 
 static void _ui_draw_text(Ui *ui) {
 
-    // TODO: this
+    // limit rendering document to text area height
     size_t len = editor_get_document_size(ui->editor);
-    if (len + 1 > (size_t) ui->text_area_height)
+    if (len + 1 > (size_t) ui->text_area_height) {
         len = ui->text_area_height;
+    }
+
+
 
     // BUG: long lines causes segfaults
     // TODO: refactor this! (using helper functions)
     // keep offset in bounds
-    #if 0
-    size_t offset = ui->scroll_offset;
-    if (ui->text_area_height + offset > editor_get_document_size(ui->editor)) {
+
+#if 1
+
+    if (ui->text_area_height + ui->scroll_offset > (int) editor_get_document_size(ui->editor)) {
+
         // less lines than canvas size
-        if (editor_get_document_size(ui->editor) < (size_t) ui->text_area_height)
-            ui->scroll_offset = offset = 0;
+        if ((size_t) ui->text_area_height > editor_get_document_size(ui->editor)) {
+            ui->scroll_offset = 0;
+        }
+
         // at the end
-        else
-            ui->scroll_offset = offset = ui->editor->text.size - ui->text_area_height;
+        else {
+            ui->scroll_offset = ui->editor->text.size - ui->text_area_height;
+        }
+
     }
-    #else
+
+
+#else
     size_t offset = 0;
-    #endif
+#endif
 
     for (size_t i = 0; i < len; ++i) {
         mvwprintw(ui->window_text_area,
                   i + ui->text_border, // interpreting bool as decimal!
                   ui->text_border,
-                  "%s", editor_get_string_by_index(ui->editor, i+offset));
+                  "%s", editor_get_string_by_index(ui->editor, i + ui->scroll_offset));
     }
 
 }
