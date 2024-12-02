@@ -72,6 +72,9 @@ typedef struct {
     // Options:
     bool wrap_vertical,
          wrap_horizontal;
+
+    String clipboard;
+
 } Editor;
 // TODO: allocate editor on heap and return ptr to user
 
@@ -81,13 +84,15 @@ extern void   editor_destroy(Editor *ed);
 extern void   editor_write  (Editor *ed, const char *filename); // writes the contents of `text` into the opened file - filename == NULL will write into the already opened file, otherwise text will be written to filename
 
 // Edit Operations
-extern void editor_insert               (Editor *ed, char c);
+extern void editor_insert_char          (Editor *ed, char c);
 extern void editor_delete_char          (Editor *ed); // delete char under cursor
 extern void editor_delete_char_backspace(Editor *ed);
 extern void editor_delete_line          (Editor *ed);
 extern void editor_insert_line_after    (Editor *ed);
 extern void editor_set_mode             (Editor *ed, Mode mode);
 
+extern void editor_copy_text_line         (Editor *ed);
+extern void editor_paste_clipboard        (Editor *ed);
 extern void editor_delete_till_end_of_line(Editor *ed);
 extern void editor_split_line             (Editor *ed);
 extern void editor_join_line_next         (Editor *ed);

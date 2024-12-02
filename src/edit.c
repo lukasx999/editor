@@ -89,6 +89,7 @@ Editor editor_new(const char *filename) {
         .filename        = filename,
         .wrap_vertical   = false,
         .wrap_horizontal = false,
+        .clipboard       = string_from(""),
     };
 
     if (ed.filename == NULL) { // create empty buffer
@@ -155,6 +156,24 @@ void editor_write(Editor *ed, const char *filename) {
 /* --------------- */
 /* Edit Operations */
 /* --------------- */
+
+void editor_copy_text_line(Editor *ed) {
+    String *current = _editor_get_current_string(ed);
+    ed->clipboard = *current;
+}
+
+void editor_paste_clipboard(Editor *ed) {
+    String *clipboard = &ed->clipboard;
+    editor_insert_line_after(ed);
+    editor_move_down(ed);
+
+    for (size_t i=0; i < strlen(clipboard->str); ++i) {
+        editor_insert_char(ed, clipboard->str[i]);
+    }
+
+    editor_move_start_line(ed);
+
+}
 
 
 void editor_delete_till_end_of_line(Editor *ed) {
@@ -236,7 +255,7 @@ void editor_delete_line(Editor *ed) {
 
 }
 
-void editor_insert(Editor *ed, char c) {
+void editor_insert_char(Editor *ed, char c) {
 
     String *current = _editor_get_current_string(ed);
 

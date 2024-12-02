@@ -42,7 +42,7 @@ static void _ui_draw_text(Ui *ui) {
 
     // TODO: this
 
-#if 1
+#if 0
 
     if (ui->text_area_height + ui->scroll_offset >
         (int) editor_get_document_size(ui->editor)) {
@@ -213,6 +213,14 @@ void ui_loop(Ui *ui) {
                         editor_delete_till_end_of_line(ui->editor);
                         break;
 
+                    case 'y':
+                        editor_copy_text_line(ui->editor);
+                        break;
+
+                    case 'p':
+                        editor_paste_clipboard(ui->editor);
+                        break;
+
                     case 'J':
                         editor_join_line_next(ui->editor);
                         break;
@@ -310,7 +318,7 @@ void ui_loop(Ui *ui) {
                 if (!isprint(c))
                     break;
 
-                editor_insert(ui->editor, c);
+                editor_insert_char(ui->editor, c);
 
             } break;
 
