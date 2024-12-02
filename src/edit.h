@@ -23,6 +23,7 @@ extern void   string_append_string     (String *s, const String *other);
 extern void   string_insert_char_before(String *s, size_t index, char c);
 extern void   string_insert_char_after (String *s, size_t index, char c);
 extern void   string_delete_till_end_of_string(String *s, size_t index); // index is inclusive
+extern char*  string_get_substring_till_end_of_string(String *s, size_t index); // Caller is responsible for freeing
 
 
 
@@ -91,11 +92,13 @@ extern void editor_delete_line          (Editor *ed);
 extern void editor_insert_line_after    (Editor *ed);
 extern void editor_set_mode             (Editor *ed, Mode mode);
 
-extern void editor_copy_text_line         (Editor *ed);
-extern void editor_paste_clipboard        (Editor *ed);
-extern void editor_delete_till_end_of_line(Editor *ed);
-extern void editor_split_line             (Editor *ed);
-extern void editor_join_line_next         (Editor *ed);
+
+extern void editor_copy_text_line            (Editor *ed);
+extern void editor_copy_text_till_end_of_line(Editor *ed);
+extern void editor_paste_clipboard           (Editor *ed);
+extern void editor_delete_till_end_of_line   (Editor *ed);
+extern void editor_split_line                (Editor *ed);
+extern void editor_join_line_next            (Editor *ed);
 
 
 // Read Operations

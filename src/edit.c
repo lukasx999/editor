@@ -162,6 +162,13 @@ void editor_copy_text_line(Editor *ed) {
     ed->clipboard = *current;
 }
 
+void editor_copy_text_till_end_of_line(Editor *ed) {
+    String *current = _editor_get_current_string(ed);
+    char *substring = string_get_substring_till_end_of_string(current, ed->cursor_column);
+    ed->clipboard = string_from(substring);
+    free(substring);
+}
+
 void editor_paste_clipboard(Editor *ed) {
     String *clipboard = &ed->clipboard;
     editor_insert_line_after(ed);

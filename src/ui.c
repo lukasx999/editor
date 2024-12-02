@@ -193,11 +193,11 @@ void ui_loop(Ui *ui) {
                         quit = true;
                         break;
 
-                    case 45: // Minus
+                    case ED_KEY_MINUS: // Minus
                         _ui_scroll_up(ui);
                         break;
 
-                    case 43: // Plus
+                    case ED_KEY_PLUS: // Plus
                         _ui_scroll_down(ui);
                         break;
 
@@ -215,6 +215,10 @@ void ui_loop(Ui *ui) {
 
                     case 'y':
                         editor_copy_text_line(ui->editor);
+                        break;
+
+                    case 'Y':
+                        editor_copy_text_till_end_of_line(ui->editor);
                         break;
 
                     case 'p':
@@ -299,13 +303,13 @@ void ui_loop(Ui *ui) {
             case MODE_APPEND:
             case MODE_INSERT: {
 
-                if (c == KEY_ESCAPE) {
+                if (c == ED_KEY_ESCAPE) {
                     editor_set_mode(ui->editor, MODE_NORMAL);
                     editor_move_left(ui->editor);
                     break;
                 }
 
-                if (c == KEY_RETURN) {
+                if (c == ED_KEY_RETURN) {
                     editor_split_line(ui->editor);
                     break;
                 }
@@ -323,7 +327,7 @@ void ui_loop(Ui *ui) {
             } break;
 
             case MODE_COMMAND: {
-                if (c == KEY_ESCAPE) {
+                if (c == ED_KEY_ESCAPE) {
                     editor_set_mode(ui->editor, MODE_NORMAL);
                     break;
                 }

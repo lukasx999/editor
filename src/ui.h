@@ -7,8 +7,15 @@
 #include <ncurses.h>
 #include "./edit.h"
 
-#define KEY_ESCAPE 27
-#define KEY_RETURN 10
+
+
+// ED_KEY_* because KEY_* prefix is already being used by ncurses
+#define ED_KEY_ESCAPE 27
+#define ED_KEY_RETURN 10
+#define ED_KEY_PLUS 43
+#define ED_KEY_MINUS 45
+
+
 
 typedef enum {
     PAIR_DEFAULT    = 0,

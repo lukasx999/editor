@@ -120,3 +120,12 @@ void string_delete_till_end_of_string(String *s, size_t index) {
     s->size = index;
 
 }
+
+// Caller is responsible for freeing
+char* string_get_substring_till_end_of_string(String *s, size_t index) {
+
+    char *str = calloc(s->size - index, sizeof(char));
+    strncpy(str, s->str+index, s->size - index);
+    return str;
+
+}
