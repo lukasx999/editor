@@ -23,7 +23,7 @@ static void _ui_draw_statusline(Ui *ui) {
     snprintf(fmt, 10, "|%s|", modes_repr[ui->editor->mode]);
     mvwprintw(ui->window, getmaxy(ui->window)-1, 0, "%s", fmt);
     color_set(PAIR_DEFAULT, NULL);
-    // mvwprintw(ui->window, 0, 0, "[%s]", ui->editor->filename);
+    mvwprintw(ui->window, 0, 0, "[%s]", ui->editor->filename);
 }
 
 static void _ui_draw_border(WINDOW *w) {
@@ -40,9 +40,17 @@ static void _ui_draw_text(Ui *ui) {
 
 
 
+    // TODO: output buffer
+
+
+    // editor_get_string_by_index(ui->editor, i + ui->scroll_offset);
+
+
+
+
     // TODO: this
 
-#if 0
+#if 1
 
     if (ui->text_area_height + ui->scroll_offset >
         (int) editor_get_document_size(ui->editor)) {
@@ -117,12 +125,15 @@ Ui ui_init(Editor *ed) {
     wbkgd(text_area, COLOR_PAIR(PAIR_TEXT));
 
     Ui ui = {
-        .window           = window,
-        .editor           = ed,
-        .window_text_area = text_area,
-        .text_border      = border,
-        .text_area_height = text_area_height - 2 * border,
-        .scroll_offset    = 0,
+        .statusbar_space      = status_top_height,
+        .window               = window,
+        .editor               = ed,
+        .window_text_area     = text_area,
+        .text_border          = border,
+        .text_area_height     = text_area_height - 2 * border,
+        .scroll_offset        = 0,
+        .visual_cursor_line   = 0,
+        .visual_cursor_column = 0,
     };
 
     return ui;
@@ -158,9 +169,14 @@ void ui_loop(Ui *ui) {
         if (ui->text_border)
             _ui_draw_border(ui->window_text_area);
 
+        // wmove(ui->window_text_area,
+        //       ui->editor->cursor_line   + ui->text_border,
+        //       ui->editor->cursor_column + ui->text_border);
+
+        // Move Cursor
         wmove(ui->window_text_area,
-              ui->editor->cursor_line   + ui->text_border,
-              ui->editor->cursor_column + ui->text_border);
+              ui->visual_cursor_line   + ui->text_border,
+              ui->visual_cursor_column + ui->text_border);
 
         wrefresh(ui->window_text_area);
         /* --------- */
@@ -172,6 +188,15 @@ void ui_loop(Ui *ui) {
         assert((size_t) ui->editor->cursor_line < editor_get_document_size(ui->editor));
 
 
+        if (ui->visual_cursor_line >= ui->text_area_height-1) {
+            _ui_scroll_down(ui);
+            ui->visual_cursor_line--;
+        }
+
+        // if (ui->visual_cursor_line <= ui->statusbar_space) {
+        //     _ui_scroll_up(ui);
+        //     ui->visual_cursor_line++;
+        // }
 
 
 
@@ -288,10 +313,12 @@ void ui_loop(Ui *ui) {
 
                     case 'j':
                         editor_move_down(ui->editor);
+                        ui->visual_cursor_line++;
                         break;
 
                     case 'k':
                         editor_move_up(ui->editor);
+                        ui->visual_cursor_line--;
                         break;
 
                 }

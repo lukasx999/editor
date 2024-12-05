@@ -32,10 +32,11 @@ typedef struct {
     WINDOW *window_text_area; // bounds of actual text
     int     scroll_offset;
     int     text_area_height;
+    int     statusbar_space;
     bool    text_border;
 
-    // int     visual_cursor_line;
-    // int     visual_cursor_column;
+    int     visual_cursor_line;
+    int     visual_cursor_column;
 
 } Ui;
 
