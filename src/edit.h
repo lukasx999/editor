@@ -102,7 +102,7 @@ extern void editor_join_line_next            (Editor *ed);
 
 
 // Read Operations
-extern char*  editor_get_string_by_index      (Editor *ed, size_t index);
+extern char*  editor_get_string_by_index      (Editor *ed, size_t index); // returns NULL on invalid index
 extern size_t editor_get_document_size        (Editor *ed);
 extern Mode   editor_get_current_mode         (Editor *ed);
 extern size_t editor_get_current_string_length(Editor *ed);

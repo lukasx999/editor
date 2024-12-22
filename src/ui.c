@@ -10,6 +10,7 @@
 
 #include "./ui.h"
 #include "./log.h"
+#include "edit.h"
 
 
 static void _quit(void) {
@@ -32,51 +33,34 @@ static void _ui_draw_border(WINDOW *w) {
 
 static void _ui_draw_text(Ui *ui) {
 
-    // limit rendering document to text area height
-    size_t len = editor_get_document_size(ui->editor);
-    if (len + 1 > (size_t) ui->text_area_height) {
-        len = ui->text_area_height;
+    size_t width = getmaxx(stdscr);
+    size_t height = ui->text_area_height;
+
+    char **output_buffer = malloc(height * sizeof(char*));
+
+    // Fill output buffer
+    for (size_t i=0; i < height; ++i) {
+        output_buffer[i] = malloc(width * sizeof(char));
+        char *line = editor_get_string_by_index(ui->editor, i);
+        if (line == NULL) {
+            strncpy(output_buffer[i], "~", width);
+        } else {
+            strncpy(output_buffer[i], line, width);
+        }
     }
 
-
-
-    // TODO: output buffer
-
-
-    // editor_get_string_by_index(ui->editor, i + ui->scroll_offset);
-
-
-
-
-    // TODO: this
-
-#if 1
-
-    if (ui->text_area_height + ui->scroll_offset >
-        (int) editor_get_document_size(ui->editor)) {
-
-        // all lines fit on screen
-        if ((size_t) ui->text_area_height > editor_get_document_size(ui->editor)) {
-            ui->scroll_offset = 0;
-        }
-
-        // at the end
-        else {
-            ui->scroll_offset = editor_get_document_size(ui->editor) - ui->text_area_height;
-        }
-
-    }
-
-#else
-    size_t offset = 0;
-#endif
-
-    for (size_t i = 0; i < len; ++i) {
+    for (size_t i = 0; i < height; ++i) {
         mvwprintw(ui->window_text_area,
-                  i + ui->text_border, // interpreting bool as decimal!
+                  i + ui->text_border,
                   ui->text_border,
-                  "%s", editor_get_string_by_index(ui->editor, i + ui->scroll_offset));
+                  "%s", output_buffer[i]);
     }
+
+
+    for (size_t i=0; i < height; ++i) {
+        free(output_buffer[i]);
+    }
+    free(output_buffer);
 
 }
 
@@ -209,6 +193,25 @@ void ui_loop(Ui *ui) {
         switch (editor_get_current_mode(ui->editor)) {
             case MODE_NORMAL: {
                 switch (c) {
+
+                    case 'h':
+                        editor_move_left(ui->editor);
+                        break;
+
+                    case 'l':
+                        editor_move_right(ui->editor);
+                        break;
+
+                    case 'j':
+                        editor_move_down(ui->editor);
+                        ui->visual_cursor_line++;
+                        break;
+
+                    case 'k':
+                        editor_move_up(ui->editor);
+                        ui->visual_cursor_line--;
+                        break;
+
                     case 'W':
                         if (ui->editor->filename != NULL) // dont try to write empty buffer
                             editor_write(ui->editor, NULL);
@@ -301,24 +304,6 @@ void ui_loop(Ui *ui) {
 
                     case ':':
                         editor_set_mode(ui->editor, MODE_COMMAND);
-                        break;
-
-                    case 'h':
-                        editor_move_left(ui->editor);
-                        break;
-
-                    case 'l':
-                        editor_move_right(ui->editor);
-                        break;
-
-                    case 'j':
-                        editor_move_down(ui->editor);
-                        ui->visual_cursor_line++;
-                        break;
-
-                    case 'k':
-                        editor_move_up(ui->editor);
-                        ui->visual_cursor_line--;
                         break;
 
                 }

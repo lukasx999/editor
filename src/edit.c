@@ -303,7 +303,10 @@ void editor_set_mode(Editor *ed, Mode mode) {
 
 
 char* editor_get_string_by_index(Editor *ed, size_t index) {
-    assert(index < ed->text.size);
+    if (index > ed->text.size) {
+        return NULL;
+    }
+
     return ed->text.lines[index].str;
 }
 
